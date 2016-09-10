@@ -49,11 +49,5 @@ warmcache:
     query:
       type: string
       description: The MDX query to execute.
-addmongoschema:
-  description: Add a mongo data soruce to the server
-  params:
-    content:
-      type: string
-      description: Content of the data source.
 gettriallicense:
   description: Install a Saiku Analytics Enterprise trial license on the server
