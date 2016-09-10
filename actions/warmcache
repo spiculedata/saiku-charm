@@ -1,0 +1,32 @@
+#!/bin/bash
+
+#Warm the cache by executing a query.
+
+set -ex
+juju-log "Execute query on server"
+
+query_uuid=$(cat /proc/sys/kernel/random/uuid)
+cube_connection=`action-get cubeconnection`
+cube_catalog=`action-get cubecatalog`
+cube_schema=`action-get cubeschema`
+cube_name=`action-get cubename`
+mdx_query=`action-get query`
+template="{\"name\":\"$query_uuid\",\"queryModel\":{\"axes\":{\"FILTER\":{\"mdx\":null,\"filters\":[],\"sortOrder\":null,\"sortEvaluationLiteral\":null,\"hierarchizeMode\":null,\"location\":\"FILTER\",\"hierarchies\":[],\"nonEmpty\":false},\"COLUMNS\":{\"mdx\":null,\"filters\":[],\"sortOrder\":null,\"sortEvaluationLiteral\":null,\"hierarchizeMode\":null,\"location\":\"COLUMNS\",\"hierarchies\":[],\"nonEmpty\":true},\"ROWS\":{\"mdx\":null,\"filters\":[],\"sortOrder\":null,\"sortEvaluationLiteral\":null,\"hierarchizeMode\":null,\"location\":\"ROWS\",\"hierarchies\":[],\"nonEmpty\":true}},\"visualTotals\":false,\"visualTotalsPattern\":null,\"lowestLevelsOnly\":false,\"details\":{\"axis\":\"COLUMNS\",\"location\":\"BOTTOM\",\"measures\":[]},\"calculatedMeasures\":[]},\"queryType\":\"OLAP\",\"type\":\"QUERYMODEL\",\"cube\":{\"connection\":\"$cube_connection\",\"catalog\":\"$cube_catalog\",\"schema\":\"$cube_schema\",\"name\":\"$cube_name\"}}"
+template_query="{\"name\":\"$query_uuid\",\"queryModel\":{},\"queryType\":\"OLAP\",\"type\":\"MDX\",\"cube\":{\"uniqueName\":\"[$cube_connection].[$cube_catalog].[$cube_schema].[$cube_name]\",\"name\":\"$cube_name\",\"connection\":\"$cube_connection\",\"catalog\":\"$cube_catalog\",\"schema\":\"$cube_schema\",\"caption\":null,\"visible\":false},\"mdx\":\"$mdx_query\",\"parameters\":{},\"plugins\":{},\"properties\":{\"saiku.olap.query.automatic_execution\":true,\"saiku.olap.query.nonempty\":true,\"saiku.olap.query.nonempty.rows\":true,\"saiku.olap.query.nonempty.columns\":true,\"saiku.ui.render.mode\":\"table\",\"saiku.olap.query.filter\":true,\"saiku.olap.result.formatter\":\"flat\",\"org.saiku.query.explain\":true,\"org.saiku.connection.scenario\":false,\"saiku.olap.query.drillthrough\":true},\"metadata\":{}}"
+
+response=$(curl -s -o /dev/null -w "%{http_code}\n" -X POST http://localhost:8080/saiku/rest/saiku/session --data "username=admin&password=admin" -c cookies.txt)
+
+
+if [ $response -ne 200 ];
+then
+	curl -s -o /dev/null -w "%{http_code}\n" 'http://localhost:8080/saiku/rest/saiku/session/clear' -H 'Content-Type: application/x-www-form-urlencoded' --data 'username=admin&password=admin' -b cookies.txt
+	curl -X POST http://localhost:8080/saiku/rest/saiku/session --data "username=admin&password=admin" -c cookies.txt
+fi
+
+
+curl -b cookies.txt 'http://localhost:8080/saiku/rest/saiku/api/query/$query_uuid' -d json="$template"
+
+
+curl -b cookies.txt 'http://localhost:8080/saiku/rest/saiku/api/query/execute' -H 'Content-Type: application/json' --data-binary "$template_query" -H 'Accept: application/json, text/javascript, */*; q=0.01' >/dev/null 2>&1 
+
+action-set outcome="finished"

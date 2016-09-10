@@ -1,0 +1,64 @@
+options:
+  version:
+    type: string
+    default: 'enterprise'
+    description: 'Install Enterprise or the Community version'
+  dimension_prefetch:
+    type: boolean
+    default: true
+    description: prefetch the dimensions
+  dimension_show_all:
+    type: boolean
+    default: true
+    descrption: show all
+  dimension_hide_hierarchy:
+    type: string
+    default: 'SINGLE_LEVEL'
+    description: Change the hierchy display (valid values are: NONE, SINGLE_LEVEL, ALL)
+  i18n_locale:
+    type: string
+    description: Override the default UI locale
+  table_lazy_load:
+    type: boolean
+    description: Lazy loading table to improve rendering performance
+    default: true
+  table_lazy_size:
+    type: string
+    default: '1000'
+    description: Number of rows to batch load
+  cellset_formatter:
+    type: string
+    default: 'flattened'
+    description: Alternative cellset formatter (Valid values: flattened, flat)
+  result_limit:
+    type: string
+    default: '0'
+    description: Limit of rows in result (0 = no limit)
+  members_from_result:
+    type: boolean
+    default: true
+    description: Get members for filter from result
+  members_limit:
+    type: string
+    default: '3000'
+    description: Max members in UI
+  allow_parameters:
+    type: boolean
+    default: true
+    description: Allow users to create parameterised reports
+  default_view_state:
+     type: string
+     default: 'view'
+     description: view or edit
+  evaluation_panel_login:
+     type: boolean
+     default: true
+     description: Show or hide the demo users on the Login screen
+  show_refresh_nonadmin:
+     type: boolean
+     default: true
+     description: Allow non administrators to refresh the datasources
+  hide_empty_rows:
+     type: boolean
+     default: true
+     description: hide empty rows to save space.

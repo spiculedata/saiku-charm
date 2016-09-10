@@ -1,0 +1,12 @@
+#!/bin/bash
+#Upload a Mondrian schema to Saiku and deploy it to the repository.
+set -ex
+juju-log "Installing trial license to server"
+
+hname=$(hostname)
+
+curl "http://licensing.meteorite.bi/licenses/juju/$hname" -o /tmp/license.lic
+
+curl -X POST http://localhost:8080/saiku/rest/saiku/api/license --data-binary @/tmp/license.lic -u admin:admin -H "content-type:application/x-java-serialized-object"
+
+action-set outcome="finished"

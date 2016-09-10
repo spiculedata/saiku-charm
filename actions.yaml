@@ -1,0 +1,59 @@
+addschema:
+  description: Upload a schema definition to Saiku
+  params:
+     name:
+       type: string
+       description: Name of the file to be written.
+     content:
+       type: string
+       description: XML file content
+adddatasource:
+  description: Upload a datasource definition to Saiku
+  params:
+     content:
+       type: string
+       description: The contents of a Saiku data source definition.
+addreport:
+  description: Upload a saved file to the saiku repository
+  params:
+    content:
+      type: string
+      description: The file content.
+    path:
+      type: string
+      description: The path to save the file to.
+addlicense:
+  description: Upload a license to the server
+  params:
+    path:
+      type: string
+      description: Path to license.
+    name:
+      type: string
+      description: File name.
+warmcache:
+  description: Warm the Mondrian Cache by executing a query.
+  params:
+    cubeconnection:
+      type: string
+      description: Connection Name.
+    cubecatalog:
+      type: string
+      description: Connection Catalog.
+    cubeschema:
+      type: string
+      description: Connection Schema.
+    cubename:
+      type: string
+      description: The cube to query.
+    query:
+      type: string
+      description: The MDX query to execute.
+addmongoschema:
+  description: Add a mongo data soruce to the server
+  params:
+    content:
+      type: string
+      description: Content of the data source.
+gettriallicense:
+  description: Install a Saiku Analytics Enterprise trial license on the server

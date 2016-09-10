@@ -1,0 +1,10 @@
+#!/bin/bash
+#Install a license on the server.
+set -ex
+juju-log "Uploading license to server"
+
+license_path=`action-get path`
+
+curl -X POST http://localhost:8080/saiku/rest/saiku/api/license --data-binary @$license_path -u admin:admin -H "content-type:application/x-java-serialized-object"
+
+action-set outcome="finished"

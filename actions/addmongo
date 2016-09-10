@@ -1,0 +1,22 @@
+#!/bin/bash
+#Upload a Mondrian schema to Saiku and deploy it to the repository.
+set -ex
+juju-log "Uploading schema to server"
+
+schema_name=`action-get name`
+
+schema_content=`action-get content`
+
+printf "$schema_content" > /tmp/$schema_name
+
+response=$(curl -s -o /dev/null -w "%{http_code}\n" -X POST http://localhost:8080/saiku/rest/saiku/session --data "username=admin&password=admin" -c cookies.txt)
+
+if [ $response -ne 200 ];
+then
+	curl -s -o /dev/null -w "%{http_code}\n" 'http://localhost:8080/saiku/rest/saiku/session/clear' -H 'Content-Type: application/x-www-form-urlencoded' --data 'username=admin&password=admin' -b cookies.txt
+	curl -X POST http://localhost:8080/saiku/rest/saiku/session --data "username=admin&password=admin" -c cookies.txt
+fi
+
+curl -b cookies.txt -X PUT http://localhost:8080/saiku/rest/saiku/admin/schema/t2 -F file=@/tmp/$schema_name -F name=$schema_name
+
+action-set outcome="finished"

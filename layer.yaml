@@ -1,0 +1,5 @@
+includes: ['layer:basic', 'interface:mysql', 'interface:pgsql']
+options:
+  basic:
+    packages:
+      - unzip

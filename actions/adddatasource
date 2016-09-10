@@ -1,0 +1,24 @@
+#!/bin/bash
+#Upload a Mondrian schema to Saiku and deploy it to the repository.
+set -ex
+juju-log "Uploading datasource to server"
+
+
+ds_uuid=$(cat /proc/sys/kernel/random/uuid)
+
+datasource_content=`action-get content`
+
+template="{\"id\": \"$ds_uuid\",\"advanced\": \"$datasource_content\",\"connectiontype\": null,\"connectionname\": \"taxi2\",\"jdbcurl\": null,\"schema\": null,\"path\": null,\"driver\": null,\"username\": null,\"password\": null}"
+
+
+response=$(curl -s -o /dev/null -w "%{http_code}\n" -X POST http://localhost:8080/saiku/rest/saiku/session --data "username=admin&password=admin" -c cookies.txt)
+
+if [ $response -ne 200 ];
+then
+	curl -s -o /dev/null -w "%{http_code}\n" 'http://localhost:8080/saiku/rest/saiku/session/clear' -H 'Content-Type: application/x-www-form-urlencoded' --data 'username=admin&password=admin' -b cookies.txt
+	curl -X POST http://localhost:8080/saiku/rest/saiku/session --data "username=admin&password=admin" -c cookies.txt
+fi
+
+curl -b cookies.txt -X PUT http://localhost:8080/saiku/rest/saiku/admin/datasources/$ds_uuid --data "$template" -H "content-type:application/json"
+
+action-set outcome="finished"

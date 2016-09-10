@@ -1,0 +1,30 @@
+series:
+  - trusty
+  - precise
+  - wily
+  - xenial
+name: saikuanalytics-enterprise
+summary: Web Based data analysis and dashboarding tool for SQL and NOSQL data
+maintainer: Meteorite BI <info@meteorite.bi>
+description: |
+  Web based OLAP tool which allows users to query data stored in JDBC compliant databases and NOSQL clusters.
+tags:
+  - analytics
+  - big_data
+subordinate: true
+requires:
+  website:
+    interface: http
+    scope: container
+  mysql:
+    interface: mysql
+  pgsql:
+    interface: pgsql
+  hive:
+    interface: hive
+  drill:
+    interface: drill
+  hbase:
+    interface: hbase
+  db2:
+    interface: db2
