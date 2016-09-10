@@ -1,6 +1,6 @@
 # Overview
 
-This charm provides [Saiku Analytics Enterprise Edition](http://meteorite.bi/products/saiku). Saiku Analytics is a flexible & lightweight web based OLAP Analysis tool that is designed to allow users to slice and dice their data using any modern web browser. Saiku Analytics will run on top of most JDBC compliant databases.
+This charm provides [Saiku Analytics](http://meteorite.bi/products/saiku), both Enterprise and Community editions. Saiku Analytics is a flexible & lightweight web based OLAP Analysis tool that is designed to allow users to slice and dice their data using any modern web browser. Saiku Analytics will run on top of most JDBC compliant databases.
 
 Saiku allows business users to explore complex data sources, using a familiar drag and drop interface and easy to understand business terminology, all within a browser. Select the data you are interested in, look at it from different perspectives, drill into the detail. Once you have your answer, save your results, share them, export them to Excel or PDF, all straight from the browser.
 
@@ -14,7 +14,6 @@ Some examples are:
 * Microsoft Analysis Services
 * Oracle Database
 * Oracle Essbase
-* MongoDB
 * MySQL
 * PostgreSQL
 * Cloudera Impala
@@ -24,6 +23,8 @@ Some examples are:
 * Vertica
 
 ## User driven dashboarding.
+
+(Enterprise only)
 
 Give users the ability to create their own dashboards from Saiku reports. Using the Saiku Dashboard Designer users can build and deploy their own flexible, parameter driven dashboards, without writing a single line of code. Filter reports in unison with combined filters, show the data your users want with the minimum of fuss.
 
@@ -66,7 +67,6 @@ To connect to a data source you need 2 things a Data Source connection and also 
 
     juju action do saiku/0 addschema name=spark content="$(cat ${MYDIR}/../var/spark_schema.xml)"
 
-
 * Add A Data Source
 
 Along with a schema you require a data source that defines the JDBC connection and the schema to use with that connection.
@@ -86,18 +86,11 @@ If you already have a Saiku Enterprise license, you can SCP it to the server, th
     juju scp "${MYDIR}/../var/license.lic" saiku/0:/tmp/license.lic
     juju action do saiku/0 addlicense path="/tmp/license.lic"
 
-
 * Warm Cache
 
 Saiku makes extensive use of caching to speed up response times especially over large and/or slow data sets. You can use this action to "warm the cache", so that users who login and run a query that can make use of the resultset this query provides will get a near instant response instead of the server having to read from the database. You can warm the cache with as many queries as you like.
  
     juju action do saiku/0 warmcache cubeconnection=taxi-mongo cubecatalog="Taxi Fares" cubeschema="Taxi Fares" cubename="Fares" query="WITH SET [~ROWS] AS {[Fares].[Payment Type].[Payment Type].Members} SELECT NON EMPTY {[Measures].[Max Tip Amount]} ON COLUMNS, NON EMPTY [~ROWS] ON ROWS FROM [Fares]"
-
-* Add Mongo Schema
-
-If you want to use Saiku with Mongo you need a second schema that defines the mapping of MongoDB fields into the table columns an SQL result set needs. You can find more about that [here](http://wiki.meteorite.bi/display/SAIK/Connecting+to+MongoDB).
-
-    juju action do saiku/0 addmongoschema content="$(sed -e s/MONGODB_HOST/${MONGODB_PRIVATE_IPADDRESS}/g ${MYDIR}/../var/mongo_db)"
 
 * Get Trial License
 
