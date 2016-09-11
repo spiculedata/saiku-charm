@@ -6,11 +6,10 @@ from charmhelpers.core.hookenv import status_set
 from charmhelpers.core.host import chownr
 from charmhelpers.fetch.archiveurl import ArchiveUrlFetchHandler
 from charms.reactive import when_not, set_state, when
+from charmhelpers.core.hookenv import status_set, log, resource_get
 
-au = ArchiveUrlFetchHandler()
 container = "unknown"
 saiku_directory="/usr/share/saiku_ee"
-saiku_url="http://www.meteorite.bi/downloads/saikuee-manual-3.8.1.zip"
 
 @when_not('saikuanalytics-enterprise.installed')
 def install_saikuanalytics_enterprise():
@@ -28,10 +27,10 @@ def install_saikuanalytics_enterprise():
         status_set('blocked', 'Installation failed, container not installed correctly')
     else:
         if not os.path.exists(saiku_directory):
-            os.mkdir(saiku_directory, 777)
+            os.mkdir(saiku_directory, 754)
 
-        au.download(saiku_url, "/tmp/saikuee-manual.zip")
-        check_output(["unzip", "/tmp/saikuee-manual", "-d", saiku_directory])
+        saiku = resource_get("software")
+        check_output(["unzip", saiku, "-d", saiku_directory])
 
         check_output(["unzip", saiku_directory+"/data.zip", "-d", saiku_directory+"/data"])
         check_output(["unzip", saiku_directory+"/repository.zip", "-d", saiku_directory+"/repository"])
@@ -44,9 +43,13 @@ def install_saikuanalytics_enterprise():
         replace_vars("/var/lib/"+container+"/webapps/saiku/WEB-INF/web.xml", "../../data/", "/usr/share/saiku_ee/data/")
         replace_vars("/var/lib/"+container+"/webapps/saiku/WEB-INF/web.xml", "../../repository/", "/usr/share/saiku_ee/repository/")
         replace_vars("/var/lib/"+container+"/webapps/saiku/WEB-INF/saiku-beans.xml", "../../repository/", "/usr/share/saiku_ee/repository/")
-        replace_vars("/var/lib/"+container+"/webapps/saiku/WEB-INF/saiku-beans.xml", "../../data/", "/usr/share/saiku_ee/data/")
+        replace_vars("/var/lib/"+container+"/webapps/saiku/WEB-INF/saiku-beans.xml", "../../data", "/usr/share/saiku_ee/data/")
         replace_vars("/var/lib/"+container+"/webapps/saiku/WEB-INF/saiku-beans.xml", "../webapps/", "/var/lib/"+container+"/webapps/")
+        replace_vars("/var/lib/"+container+"/webapps/saiku/WEB-INF/saiku-beans.properties", "../../data", "/usr/share/saiku_ee/data")
+        replace_vars("/var/lib/"+container+"/webapps/saiku/WEB-INF/saiku-beans.properties", "../../repository", "/usr/share/saiku_ee/repository")
+
         replace_vars("/var/lib/"+container+"/webapps/saiku/WEB-INF/applicationContext-spring-security-jdbc.properties", "../../data/", "/usr/share/saiku_ee/data")
+        replace_vars("/var/lib/"+container+"/webapps/saiku/WEB-INF/applicationContext-spring-security.xml", "${AUTH_TYPE}", "jdbc")
 
 
         chownr(saiku_directory, container, container, True, True)

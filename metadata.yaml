@@ -28,3 +28,9 @@ requires:
     interface: hbase
   db2:
     interface: db2
+resources:
+   software:
+      type: file
+      filename: saiku.zip
+      description: "The Saiku TarBall"
+
