@@ -29,8 +29,12 @@ requires:
   db2:
     interface: db2
 resources:
-   software:
+   saiku_ce:
       type: file
-      filename: saiku.zip
-      description: "The Saiku TarBall"
+      filename: saiku_ce.zip
+      description: "The Saiku CE TarBall"
+   saiku_ee:
+      type: file
+      filename: saiku_ee.zip
+      description: "The Saiku CE TarBall"
 
