@@ -14,7 +14,7 @@ options:
   dimension_hide_hierarchy:
     type: string
     default: 'SINGLE_LEVEL'
-    description: Change the hierchy display (valid values are: NONE, SINGLE_LEVEL, ALL)
+    description: Change the hierchy display (valid values are NONE, SINGLE_LEVEL, ALL)
   i18n_locale:
     type: string
     description: Override the default UI locale
@@ -29,7 +29,7 @@ options:
   cellset_formatter:
     type: string
     default: 'flattened'
-    description: Alternative cellset formatter (Valid values: flattened, flat)
+    description: Alternative cellset formatter (Valid values flattened, flat)
   result_limit:
     type: string
     default: '0'

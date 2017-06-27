@@ -45,11 +45,18 @@ def install_saikuanalytics_enterprise():
         replace_vars("/var/lib/"+container+"/webapps/saiku/WEB-INF/web.xml", "../../repository/", "/usr/share/saiku_ee/repository/")
         replace_vars("/var/lib/"+container+"/webapps/saiku/WEB-INF/saiku-beans.xml", "../../repository/", "/usr/share/saiku_ee/repository/")
         replace_vars("/var/lib/"+container+"/webapps/saiku/WEB-INF/saiku-beans.xml", "../../data/", "/usr/share/saiku_ee/data/")
+        replace_vars("/var/lib/"+container+"/webapps/saiku/WEB-INF/saiku-beans.xml", "../../data", "/usr/share/saiku_ee/data/")
         replace_vars("/var/lib/"+container+"/webapps/saiku/WEB-INF/saiku-beans.xml", "../webapps/", "/var/lib/"+container+"/webapps/")
-        replace_vars("/var/lib/"+container+"/webapps/saiku/WEB-INF/applicationContext-spring-security-jdbc.properties", "../../data/", "/usr/share/saiku_ee/data")
+        replace_vars("/var/lib/"+container+"/webapps/saiku/WEB-INF/saiku-beans.properties", "../../repository", "/usr/share/saiku_ee/repository/")
+        replace_vars("/var/lib/"+container+"/webapps/saiku/WEB-INF/saiku-beans.properties", "../../data", "/usr/share/saiku_ee/data/")
+        replace_vars("/var/lib/"+container+"/webapps/saiku/WEB-INF/saiku-beans.properties", "../webapps", "/var/lib/"+container+"/webapps/")
+        replace_vars("/var/lib/"+container+"/webapps/saiku/WEB-INF/applicationContext-spring-security-jdbc.properties", "../../data/", "/usr/share/saiku_ee/data/")
 
 
         chownr(saiku_directory, container, container, True, True)
+        os.chmod(saiku_directory, 0o766)
+        check_output(["service", "tomcat", "restart"])
+        
         set_state('saikuanalytics-enterprise.installed')
         status_set('active', 'Saiku Installed')
 
