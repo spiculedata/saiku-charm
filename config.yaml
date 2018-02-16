@@ -18,6 +18,7 @@ options:
   i18n_locale:
     type: string
     description: Override the default UI locale
+    default: 'en'
   table_lazy_load:
     type: boolean
     description: Lazy loading table to improve rendering performance

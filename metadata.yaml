@@ -28,3 +28,13 @@ requires:
     interface: hbase
   db2:
     interface: db2
+resources:
+   saiku_ce:
+      type: file
+      filename: saiku_ce.zip
+      description: "The Saiku CE TarBall"
+   saiku_ee:
+      type: file
+      filename: saiku_ee.zip
+      description: "The Saiku CE TarBall"
+
