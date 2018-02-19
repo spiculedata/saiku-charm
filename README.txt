@@ -1,6 +1,6 @@
 # Overview
 
-This charm provides [Saiku Analytics](http://meteorite.bi/products/saiku), both Enterprise and Community editions. Saiku Analytics is a flexible & lightweight web based OLAP Analysis tool that is designed to allow users to slice and dice their data using any modern web browser. Saiku Analytics will run on top of most JDBC compliant databases.
+This charm provides [Saiku Analytics](http://meteorite.bi/products/saiku) Enterprise Edition. Saiku Analytics is a flexible & lightweight web based OLAP Analysis tool that is designed to allow users to slice and dice their data using any modern web browser. Saiku Analytics will run on top of most JDBC compliant databases.
 
 Saiku allows business users to explore complex data sources, using a familiar drag and drop interface and easy to understand business terminology, all within a browser. Select the data you are interested in, look at it from different perspectives, drill into the detail. Once you have your answer, save your results, share them, export them to Excel or PDF, all straight from the browser.
 
@@ -24,8 +24,6 @@ Some examples are:
 
 ## User driven dashboarding.
 
-(Enterprise only)
-
 Give users the ability to create their own dashboards from Saiku reports. Using the Saiku Dashboard Designer users can build and deploy their own flexible, parameter driven dashboards, without writing a single line of code. Filter reports in unison with combined filters, show the data your users want with the minimum of fuss.
 
 ## Unlock the data in your application or website.
@@ -42,16 +40,12 @@ Saiku is designed to be as easy to deploy as it is to use. Saiku is 100% thin cl
 
 How to deploy this charm:
 
-    juju deploy tomcat
-    juju deploy saikuanalytics-enterprise
-    juju add-relation saikuanalytics-enterprise tomcat
-    juju expose tomcat
+    juju deploy saiku-enterprise
+    juju deploy ha-proxy
+    juju add-relation saiku-enterprise ha-proxy
+    juju expose ha-proxy
 
-To use Saiku Enterprise you either need a valid full license or obtain a trial license. If you would like to use a trial license you can have the charm install one automatically:
-
-juju action do saikuanalytics-enterprise/0 gettriallicense
-
-Once you have a license installed you can then browse to http://ip-address:8080 to configure the service.
+Saiku Enterprise is commerically licensed. The charm will allow a single user experience, for multiple users please enable an SLA.
 
 To find out more about how to use Saiku Analytics you can view our wiki at [http://wiki.meteorite.bi]
 
@@ -79,24 +73,11 @@ You can prepopulate the Saiku repository with reports with the following action.
 
     juju action do saiku/0 addreport content="$(cat ${MYDIR}/../var/demo_1.saiku)" path="/homes/home:admin/demo_1.saiku"
 
-* Add A License
-
-If you already have a Saiku Enterprise license, you can SCP it to the server, then install the license with this action.
-
-    juju scp "${MYDIR}/../var/license.lic" saiku/0:/tmp/license.lic
-    juju action do saiku/0 addlicense path="/tmp/license.lic"
-
 * Warm Cache
 
 Saiku makes extensive use of caching to speed up response times especially over large and/or slow data sets. You can use this action to "warm the cache", so that users who login and run a query that can make use of the resultset this query provides will get a near instant response instead of the server having to read from the database. You can warm the cache with as many queries as you like.
  
     juju action do saiku/0 warmcache cubeconnection=taxi-mongo cubecatalog="Taxi Fares" cubeschema="Taxi Fares" cubename="Fares" query="WITH SET [~ROWS] AS {[Fares].[Payment Type].[Payment Type].Members} SELECT NON EMPTY {[Measures].[Max Tip Amount]} ON COLUMNS, NON EMPTY [~ROWS] ON ROWS FROM [Fares]"
-
-* Get Trial License
-
-The Juju charm allows you to download a 14 day trial license for Saiku Enterprise. Once this action has been run it will put in place the license and you should be able to login.
-
-    juju action do saikuanalytics-enterprise/0 gettriallicense
 
 
 # Contact Information

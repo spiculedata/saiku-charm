@@ -1,5 +1,6 @@
-includes: ['layer:basic', 'layer:snap','interface:mysql', 'interface:pgsql']
+includes: ['layer:basic', 'layer:snap','interface:mysql', 'interface:pgsql', 'interface:jdbc']
 options:
   basic:
     packages:
       - unzip
+repo: https://github.com/buggtb/saiku-charm.git

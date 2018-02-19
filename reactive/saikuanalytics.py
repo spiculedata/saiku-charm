@@ -8,15 +8,15 @@ from charms.reactive import when_not, set_state, when
 from charmhelpers.core import hookenv
 from charmhelpers.core.hookenv import status_set, log, resource_get
 from charms.layer import snap
+from charms.reactive.helpers import data_changed
 
 
 @when_not('saikuanalytics.installed')
 def install_saikuanalytics_enterprise():
 
 
-    channel = config ('channel')
     status_set('maintenance', 'Installing saiku-enterprise snap ')
-    snap.install('pentaho-biserver-spicule', channel="edge", devmode=True)
+    snap.install('saiku-enterprise', channel="edge", devmode=True)
     hookenv.open_port(8080)
     set_state('saikuanalytics.installed')
     status_set('active', 'Saiku Installed')
@@ -54,16 +54,39 @@ def check_config():
     if data_changed('hide_empty_rows', hookenv.config('hide_empty_rows')):
         update_settingsjs('HIDE_EMPTY_ROWS', hookenv.config('hide_empty_rows'))
 
+@when('saikuanalytics.installed')
+def update_sla():
+    sla = os.environ['JUJU_SLA']
+    log("SLA detected:" +sla)
+    data = ""
+    if sla == "unsupported":
+        data = "202063630746ddb796876e26b91570f3"
+    elif sla == "jujuessential":
+        data = "e9730e721a1b24d39d153f1bed832db5"
+    elif sla == "jujustandard":
+        data = "3e17f3b32b8132eb9516093acf300805"
+    elif sla == "jujuadvanced":
+        data = "0c046cec7cdfd176da05674208e39849"
+
+    if not os.path.exists("/etc/saiku"):
+      os.makedirs("/etc/saiku")
+
+    slaFile = open("/etc/saiku/shash", "w")
+    slaFile.write(data)
+    slaFile.close()    
+
+
 def update_settingsjs(varname, newvalue):
-    jsonFile = open("/var/lib/"+container+"/webapps/ROOT/js/saiku/Settings.js", "r")
-    data = json.load(jsonFile)
-    jsonFile.close()
+    #jsonFile = open("/var/lib/"+container+"/webapps/ROOT/js/saiku/Settings.js", "r")
+    #data = json.load(jsonFile)
+    #jsonFile.close()
 
-    data[varname] = newvalue
+    #data[varname] = newvalue
 
-    jsonFile = open("/var/lib/"+container+"/webapps/ROOT/js/saiku/Settings.js", "w+")
-    jsonFile.write(json.dumps(data))
-    jsonFile.close()
+    #jsonFile = open("/var/lib/"+container+"/webapps/ROOT/js/saiku/Settings.js", "w+")
+    #jsonFile.write(json.dumps(data))
+    #jsonFile.close()
+    pass
 
 def replace_vars(file, old, new):
     for line in fileinput.input(file, inplace=True):
@@ -72,25 +95,27 @@ def replace_vars(file, old, new):
 
 @when('mysql.available')
 def setup(mysql):
-    target = open('/var/lib/tomcat7/webapps/saiku/WEB-INF/classes/juju-datasources/mysql', "w")
+    target = open('/var/snap/saiku-enterprise/current/base/webapps/saiku/WEB-INF/classes/juju-datasources/mysql', "w")
     target.write("name=mysql\njdbcurl=jdbc:mysql://"+mysql.host()+":"+str(mysql.port())+"/"+mysql.database+"\nusername="+mysql.user()+"\npassword="+mysql.password()+"\ndriver=com.mysql.jdbc.Driver")
 
 @when('pgsql.master.available')
 def setup_psql(psql):
-    target = open('/var/lib/tomcat7/webapps/saiku/WEB-INF/classes/juju-datasources/postgres', "w")
+    target = open('/var/snap/saiku-enterprise/current/base/webapps/saiku/WEB-INF/classes/juju-datasources/postgres', "w")
     target.write("name=mysql\njdbcurl=jdbc:postgresql://"+psql.master.host+":"+str(psql.master.port)+"/"+psql.master.dbname+"\nusername="+psql.master.user+"\npassword="+psql.master.password+"\ndriver=org.postgresql.Driver")
 
-@when('jdbc.connection.available')
-def setup_jdbc(jdbc):
-    target = open('/var/lib/tomcat7/webapps/saiku/WEB-INF/classes/juju-datasources/drill', "w")
-    target.write("name=mysql\njdbcurl="+jdbc.url+"\nusername="+jdbc.user+"\npassword="+jdbc.password+"\ndriver="+jdbc.driver)
 
 @when('hive.ready')
 def setup_psql(psql):
-    target = open('/var/lib/tomcat7/webapps/saiku/WEB-INF/classes/juju-datasources/postgres', "w")
-    target.write("name=mysql\njdbcurl=jdbc:postgresql://"+psql.host()+":"+psql.port()+"/"+psql.database()+"\nusername="+psql.user()+"\npassword="+psql.password()+"\ndriver=org.postgresql.Driver")
+    target = open('/var/snap/saiku-enterprise/current/base/webapps/saiku/WEB-INF/classes/juju-datasources/hive', "w")
+    target.write("name=hive\njdbcurl=jdbc:postgresql://"+psql.host()+":"+psql.port()+"/"+psql.database()+"\nusername="+psql.user()+"\npassword="+psql.password()+"\ndriver=org.postgresql.Driver")
 
 @when('hbase.ready')
 def setup_psql(psql):
-    target = open('/var/lib/tomcat7/webapps/saiku/WEB-INF/classes/juju-datasources/postgres', "w")
-    target.write("name=mysql\njdbcurl=jdbc:postgresql://"+psql.host()+":"+psql.port()+"/"+psql.database()+"\nusername="+psql.user()+"\npassword="+psql.password()+"\ndriver=org.postgresql.Driver")
+    target = open('/var/snap/saiku-enterprise/current/base/webapps/saiku/WEB-INF/classes/juju-datasources/hbase', "w")
+    target.write("name=hbase\njdbcurl=jdbc:postgresql://"+psql.host()+":"+psql.port()+"/"+psql.database()+"\nusername="+psql.user()+"\npassword="+psql.password()+"\ndriver=org.postgresql.Driver")
+
+@when('jdbc.available')
+def setup_drill(jdbc):
+    target = open('/var/snap/saiku-enterprise/current/base/webapps/saiku/WEB-INF/classes/juju-datasources/'+jdbc.url(), "w")
+    target.write("name="+jdbc.host()+"\njdbcurl=jdbc:drill://"+jdbc.url()+"\ndriver="+jdbc.driver())
+
