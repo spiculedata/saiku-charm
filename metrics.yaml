@@ -1,0 +1,5 @@
+metrics:
+  usercount:
+    type: gauge
+    description: Number of Users
+    command: scripts/count_users.py
