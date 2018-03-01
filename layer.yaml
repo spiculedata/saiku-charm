@@ -1,4 +1,4 @@
-includes: ['layer:basic', 'layer:snap','interface:mysql', 'interface:pgsql', 'interface:jdbc']
+includes: ['layer:basic', 'layer:metrics', 'layer:snap','interface:mysql', 'interface:pgsql', 'interface:jdbc']
 options:
   basic:
     packages:

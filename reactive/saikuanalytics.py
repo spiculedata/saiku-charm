@@ -1,5 +1,6 @@
 import fileinput
 import os
+import yaml
 from subprocess import check_output
 
 from charmhelpers.core.host import chownr
@@ -77,16 +78,16 @@ def update_sla():
 
 
 def update_settingsjs(varname, newvalue):
-    #jsonFile = open("/var/lib/"+container+"/webapps/ROOT/js/saiku/Settings.js", "r")
-    #data = json.load(jsonFile)
-    #jsonFile.close()
-
-    #data[varname] = newvalue
-
-    #jsonFile = open("/var/lib/"+container+"/webapps/ROOT/js/saiku/Settings.js", "w+")
-    #jsonFile.write(json.dumps(data))
-    #jsonFile.close()
-    pass
+    log("updating config")
+    with open("/var/snap/saiku-enterprise/current/base/webapps/ROOT/js/saiku/Settings.yaml", 'r') as stream:
+        try:
+            data = yaml.load(stream)
+            log(data)
+            data[varname] = newvalue
+            with open('/var/snap/saiku-enterprise/current/base/webapps/ROOT/js/saiku/Settings.yaml', 'w') as outfile:
+                yaml.dump(data, outfile, default_flow_style=False)
+        except yaml.YAMLError as exc:
+             log(exc)
 
 def replace_vars(file, old, new):
     for line in fileinput.input(file, inplace=True):
@@ -96,7 +97,7 @@ def replace_vars(file, old, new):
 @when('mysql.available')
 def setup(mysql):
     target = open('/var/snap/saiku-enterprise/current/base/webapps/saiku/WEB-INF/classes/juju-datasources/mysql', "w")
-    target.write("name=mysql\njdbcurl=jdbc:mysql://"+mysql.host()+":"+str(mysql.port())+"/"+mysql.database+"\nusername="+mysql.user()+"\npassword="+mysql.password()+"\ndriver=com.mysql.jdbc.Driver")
+    target.write("name=mysql\njdbcurl=jdbc:mysql://"+str(mysql.host())+":"+str(mysql.port())+"/"+str(mysql.database())+"\nusername="+str(mysql.user())+"\npassword="+str(mysql.password())+"\ndriver=com.mysql.jdbc.Driver")
 
 @when('pgsql.master.available')
 def setup_psql(psql):
@@ -116,6 +117,6 @@ def setup_psql(psql):
 
 @when('jdbc.available')
 def setup_drill(jdbc):
-    target = open('/var/snap/saiku-enterprise/current/base/webapps/saiku/WEB-INF/classes/juju-datasources/'+jdbc.url(), "w")
-    target.write("name="+jdbc.host()+"\njdbcurl=jdbc:drill://"+jdbc.url()+"\ndriver="+jdbc.driver())
+    target = open('/var/snap/saiku-enterprise/current/base/webapps/saiku/WEB-INF/classes/juju-datasources/'+jdbc.host(), "w")
+    target.write("name="+jdbc.host()+"\njdbcurl="+jdbc.url()+"\ndriver="+jdbc.driver())
 

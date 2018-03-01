@@ -1,8 +1,4 @@
 options:
-  version:
-    type: string
-    default: 'enterprise'
-    description: 'Install Enterprise or the Community version'
   dimension_prefetch:
     type: boolean
     default: true
@@ -24,24 +20,24 @@ options:
     description: Lazy loading table to improve rendering performance
     default: true
   table_lazy_size:
-    type: string
-    default: '1000'
+    type: int
+    default: 1000
     description: Number of rows to batch load
   cellset_formatter:
     type: string
     default: 'flattened'
     description: Alternative cellset formatter (Valid values flattened, flat)
   result_limit:
-    type: string
-    default: '0'
+    type: int
+    default: 0
     description: Limit of rows in result (0 = no limit)
   members_from_result:
     type: boolean
     default: true
     description: Get members for filter from result
   members_limit:
-    type: string
-    default: '3000'
+    type: int
+    default: 3000
     description: Max members in UI
   allow_parameters:
     type: boolean
