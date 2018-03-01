@@ -6,7 +6,7 @@ options:
   dimension_show_all:
     type: boolean
     default: true
-    descrption: show all
+    description: Show All Dimension Information
   dimension_hide_hierarchy:
     type: string
     default: 'SINGLE_LEVEL'
