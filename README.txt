@@ -45,7 +45,7 @@ How to deploy this charm:
     juju add-relation saiku-enterprise ha-proxy
     juju expose ha-proxy
 
-Saiku Enterprise is commerically licensed. The charm will allow a single user experience, for multiple users please enable an SLA.
+Saiku Enterprise is commerically licensed. The charm will allow a single user experience, for multiple users please enable an SLA and input your credit card details. At that point you will be charged per user.
 
 To find out more about how to use Saiku Analytics you can view our wiki at [http://wiki.meteorite.bi]
 
@@ -83,7 +83,5 @@ Saiku makes extensive use of caching to speed up response times especially over 
 # Contact Information
 
 - [Main Website](http://meteorite.bi)
-- [Issue Tracker](http://jira.meteorite.bi)
 - [User mailing list](https://groups.google.com/a/saiku.meteorite.bi/forum/#!forum/user)
 - [Saiku on Freenode IRC](http://irc.lc/freenode/%23saiku/t4nk@)
-- [Saiku on Slack](http://chat.meteorite.bi)
