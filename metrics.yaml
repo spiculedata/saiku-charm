@@ -3,3 +3,5 @@ metrics:
     type: gauge
     description: Number of Users
     command: scripts/count_users.py
+plan:
+ required: true
